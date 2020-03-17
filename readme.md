@@ -101,7 +101,7 @@ async function getCourses(){
 ```
 
 
-## Updatating Documents
+## Updating Documents
 
 ### Query First Approach
 
@@ -185,3 +185,38 @@ async function updateCourseUpdateFirst(id){
 ```
 
 **NOTE:** It could be possible to use the the ``updateMany`` method for updating multiple Documents.
+
+## Deleting Documents
+
+### find and Delete
+
+It return the deleted Document or null in case it was not found.
+
+```javascript
+async function deleteCourseFindAndDelete(id){
+    // Update directly
+    const course = await Course.findOneAndDelete({_id: id} );
+    console.log(course);
+}
+```
+
+**NOTE:** Similar it can be used the ``findByIdAndDelete`` Method.
+
+
+### delete
+
+it returns a result object with the following format:
+
+```
+{ n: 0, ok: 1, deletedCount: 0 }
+```
+
+```javascript
+async function deleteCourseDeleteOne(id){
+    // Update directly
+    const result = await Course.deleteOne({_id: id} );
+    console.log(result);
+}
+```
+
+**NOTE:** It could be possible to use the the ``deleteMany`` method for deleting multiple Documents.

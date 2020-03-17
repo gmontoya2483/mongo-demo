@@ -102,12 +102,29 @@ async function updateCourseUpdateFirst(id){
     console.log(result);
 }
 
+async function deleteCourseFindAndDelete(id){
+    // Update directly
+    const course = await Course.findOneAndDelete({_id: id} );
+    console.log(course);
+}
+
+
+async function deleteCourseDeleteOne(id){
+    // Update directly
+    const result = await Course.deleteOne({_id: id} );
+    console.log(result);
+}
+
+
 
 //createCourse();
 //getCourses();
 //updateCourseQueryFirst('5e6ecd6f103a5b15d868dba4');
 //updateCourseFindAndUpdate('5e6ecd6f103a5b15d868dba4');
-updateCourseUpdateFirst('5e6ecd6f103a5b15d868dba4');
+//updateCourseUpdateFirst('5e6ecd6f103a5b15d868dba4');
+//deleteCourseFindAndDelete('5e7156b4bbab8332b8e225bd');
+deleteCourseDeleteOne('5e7156b4bbab8332b8e225bd');
+
 
 
 
