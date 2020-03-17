@@ -101,3 +101,87 @@ async function getCourses(){
 ```
 
 
+## Updatating Documents
+
+### Query First Approach
+
+```javascript
+async function updateCourseQueryFirst(id){
+    // findVyId()
+    const course = await Course.findById(id);
+    if (!course) return;
+
+    // Modify its properties
+    course.set({
+        isPublished: true,
+        author: 'Another Author'
+    });
+
+    // idem to:
+    // course.isPublished = true;
+    // course.author = 'Another Author';
+
+    // save()
+    const result = await course.save();
+    console.log(result);
+}
+
+```
+
+### Update first approach
+
+
+[Mongo Update Operators](https://docs.mongodb.com/manual/reference/operator/update/)
+
+#### findOneAndUpdate
+
+It returns a Document. It could be the original Document or the updated one (``option new = true``) 
+
+```javascript
+async function updateCourseFindAndUpdate(id){
+    // Update directly
+    const course = await Course.findOneAndUpdate(
+        {_id: id},
+        {
+            $set: {
+                author: 'Gabriel Hernan',
+                isPublished: false
+            }
+        },
+        {new: true} //new = true gets the new version of the updated document
+    );
+
+    console.log(course);
+}
+```
+
+**NOTE:** It could be possible to use the the ``findByIdAndUpdate`` function as well.
+
+
+#### Update
+
+It returns a Result with the following format:
+
+```
+   { n: 1, nModified: 1, ok: 1 } 
+```
+ 
+
+```javascript
+async function updateCourseUpdateFirst(id){
+    // Update directly
+    const result = await Course.updateOne(
+        {_id: id},
+        {
+            $set: {
+                author: 'Gabriel',
+                isPublished: false
+            }
+        }
+    );
+
+    console.log(result);
+}
+```
+
+**NOTE:** It could be possible to use the the ``updateMany`` method for updating multiple Documents.

@@ -51,9 +51,63 @@ async function getCourses(){
     console.log(courses);
 }
 
-//createCourse();
-getCourses();
+async function updateCourseQueryFirst(id){
+    // findVyId()
+    const course = await Course.findById(id);
+    if (!course) return;
 
+    // Modify its properties
+    course.set({
+        isPublished: true,
+        author: 'Another Author'
+    });
+
+    // idem to:
+    // course.isPublished = true;
+    // course.author = 'Another Author';
+
+    // save()
+    const result = await course.save();
+    console.log(result);
+}
+
+async function updateCourseFindAndUpdate(id){
+    // Update directly
+    const course = await Course.findOneAndUpdate(
+        {_id: id},
+        {
+            $set: {
+                author: 'Gabriel Hernan',
+                isPublished: false
+            }
+        },
+        {new: true} //new = true gets the new version of the updated document
+    );
+
+    console.log(course);
+}
+
+async function updateCourseUpdateFirst(id){
+    // Update directly
+    const result = await Course.updateOne(
+        {_id: id},
+        {
+            $set: {
+                author: 'Gabriel',
+                isPublished: false
+            }
+        }
+    );
+
+    console.log(result);
+}
+
+
+//createCourse();
+//getCourses();
+//updateCourseQueryFirst('5e6ecd6f103a5b15d868dba4');
+//updateCourseFindAndUpdate('5e6ecd6f103a5b15d868dba4');
+updateCourseUpdateFirst('5e6ecd6f103a5b15d868dba4');
 
 
 
