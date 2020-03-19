@@ -271,3 +271,48 @@ const coursesSchema = new mongoose.Schema({
 + **required**
 + **min**
 + **max**
+
+### Custom Validators
+
+```javascript
+//Schemas
+const coursesSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        minlength: 5,
+        maxlength: 255
+        //match: /pattern/
+    },
+    category: {
+        type: String,
+        enum: ['web', 'mobile', 'network'],
+        required: true
+    },
+    author: String,
+    tags: {
+        type: Array,
+        validate:{
+            validator: function(v){
+                return v && v.length > 0;
+            },
+            message: 'A course should have at least one tag.'
+        }
+
+    },
+    date: {
+        type: Date,
+        default: Date.now
+    },
+    isPublished: Boolean,
+    price: {
+        type: Number,
+        required: function () {
+            return this.isPublished;
+        },
+        min: 10,
+        max: 200
+    }
+
+});
+```
