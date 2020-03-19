@@ -316,3 +316,63 @@ const coursesSchema = new mongoose.Schema({
 
 });
 ```
+
+### Async Validators
+
+Custom validators can also be asynchronous. If your validator function returns a promise (like an ``async`` function).
+Previous versions of ``Mogoose`` used to implement the async validators as callbacks, however that approach is deprecated in current versions of ``Monngoose``
+
+```javascript
+//Schemas
+const coursesSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        minlength: 5,
+        maxlength: 255
+        //match: /pattern/
+    },
+    category: {
+        type: String,
+        enum: ['web', 'mobile', 'network'],
+        required: true
+    },
+    author: String,
+    tags: {
+        type: Array,
+        validate:{
+            validator:(v) => new Promise((resolve, reject)=>{
+                //Do some async work - Simulated
+                setTimeout(() => {
+
+                    if (v.length === 2){
+                        reject(new Error('Oops!'))
+                    }
+
+                    const result = v && v.length > 0;
+                    console.log(v);
+                    resolve(result);
+
+                }, 2000);
+
+            }),
+            message: 'A course should have at least one tag.'
+        }
+
+    },
+    date: {
+        type: Date,
+        default: Date.now
+    },
+    isPublished: Boolean,
+    price: {
+        type: Number,
+        required: function () {
+            return this.isPublished;
+        },
+        min: 10,
+        max: 200
+    }
+
+});
+```
