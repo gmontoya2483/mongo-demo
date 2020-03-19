@@ -220,3 +220,54 @@ async function deleteCourseDeleteOne(id){
 ```
 
 **NOTE:** It could be possible to use the the ``deleteMany`` method for deleting multiple Documents.
+
+## Validators
+
+[Mongoose Validation](https://mongoosejs.com/docs/validation.html#built-in-validators)
+
+### Built-in Validators
+
+```javascript
+
+//Schemas
+const coursesSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        minlength: 5,
+        maxlength: 255
+        //match: /pattern/
+    },
+    category: {
+        type: String,
+        enum: ['web', 'mobile', 'network'],
+        required: true
+    },
+    author: String,
+    tags: [String],
+    date: {
+        type: Date,
+        default: Date.now
+    },
+    isPublished: Boolean,
+    price: {
+        type: Number,
+        required: function(){ return this.isPublished; },
+        min: 10,
+        max:200
+    }
+
+});
+```
+
+#### String validators
++ **required**
++ **enum**
++ **minlength**
++ **maxlength**
++ **match**
+
+#### Number validators
++ **required**
++ **min**
++ **max**

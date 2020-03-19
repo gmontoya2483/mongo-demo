@@ -8,14 +8,34 @@ mongoose.connect('mongodb://localhost/playground',{ useNewUrlParser: true, useUn
 
 //Schemas
 const coursesSchema = new mongoose.Schema({
-    name: String,
+    name: {
+        type: String,
+        required: true,
+        minlength: 5,
+        maxlength: 255
+        //match: /pattern/
+    },
+    category: {
+        type: String,
+        enum: ['web', 'mobile', 'network'],
+        required: true
+    },
     author: String,
     tags: [String],
     date: {
         type: Date,
         default: Date.now
     },
-    isPublished: Boolean
+    isPublished: Boolean,
+    price: {
+        type: Number,
+        required: function () {
+            return this.isPublished;
+        },
+        min: 10,
+        max: 200
+    }
+
 });
 
 //Model - Class
@@ -25,13 +45,19 @@ async function createCourse() {
     //Object
     const course = new Course({
         name: 'Angular Course',
+        category: 'web',
         tags: ['angular', 'frontend'],
         author: 'Mosh',
-        isPublished: false
+        isPublished: true,
+        price: 15
     });
 
-    const result = await course.save();
-    console.log(result);
+    try {
+        const result = await course.save();
+        console.log(result);
+    } catch (ex) {
+        console.log(ex.message);
+    }
 }
 
 async function getCourses(){
@@ -116,14 +142,13 @@ async function deleteCourseDeleteOne(id){
 }
 
 
-
-//createCourse();
+createCourse();
 //getCourses();
 //updateCourseQueryFirst('5e6ecd6f103a5b15d868dba4');
 //updateCourseFindAndUpdate('5e6ecd6f103a5b15d868dba4');
 //updateCourseUpdateFirst('5e6ecd6f103a5b15d868dba4');
 //deleteCourseFindAndDelete('5e7156b4bbab8332b8e225bd');
-deleteCourseDeleteOne('5e7156b4bbab8332b8e225bd');
+//deleteCourseDeleteOne('5e7156b4bbab8332b8e225bd');
 
 
 
