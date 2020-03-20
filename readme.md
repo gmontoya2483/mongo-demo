@@ -220,3 +220,233 @@ async function deleteCourseDeleteOne(id){
 ```
 
 **NOTE:** It could be possible to use the the ``deleteMany`` method for deleting multiple Documents.
+
+## Validators
+
+[Mongoose Validation](https://mongoosejs.com/docs/validation.html#built-in-validators)
+
+### Built-in Validators
+
+```javascript
+
+//Schemas
+const coursesSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        minlength: 5,
+        maxlength: 255
+        //match: /pattern/
+    },
+    category: {
+        type: String,
+        enum: ['web', 'mobile', 'network'],
+        required: true
+    },
+    author: String,
+    tags: [String],
+    date: {
+        type: Date,
+        default: Date.now
+    },
+    isPublished: Boolean,
+    price: {
+        type: Number,
+        required: function(){ return this.isPublished; },
+        min: 10,
+        max:200
+    }
+
+});
+```
+
+#### String validators
++ **required**
++ **enum**
++ **minlength**
++ **maxlength**
++ **match**
+
+#### Number validators
++ **required**
++ **min**
++ **max**
+
+### Custom Validators
+
+```javascript
+//Schemas
+const coursesSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        minlength: 5,
+        maxlength: 255
+        //match: /pattern/
+    },
+    category: {
+        type: String,
+        enum: ['web', 'mobile', 'network'],
+        required: true
+    },
+    author: String,
+    tags: {
+        type: Array,
+        validate:{
+            validator: function(v){
+                return v && v.length > 0;
+            },
+            message: 'A course should have at least one tag.'
+        }
+
+    },
+    date: {
+        type: Date,
+        default: Date.now
+    },
+    isPublished: Boolean,
+    price: {
+        type: Number,
+        required: function () {
+            return this.isPublished;
+        },
+        min: 10,
+        max: 200
+    }
+
+});
+```
+
+### Async Validators
+
+Custom validators can also be asynchronous. If your validator function returns a promise (like an ``async`` function).
+Previous versions of ``Mogoose`` used to implement the async validators as callbacks, however that approach is deprecated in current versions of ``Monngoose``
+
+```javascript
+//Schemas
+const coursesSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        minlength: 5,
+        maxlength: 255
+        //match: /pattern/
+    },
+    category: {
+        type: String,
+        enum: ['web', 'mobile', 'network'],
+        required: true
+    },
+    author: String,
+    tags: {
+        type: Array,
+        validate:{
+            validator:(v) => new Promise((resolve, reject)=>{
+                //Do some async work - Simulated
+                setTimeout(() => {
+
+                    if (v.length === 2){
+                        reject(new Error('Oops!'))
+                    }
+
+                    const result = v && v.length > 0;
+                    console.log(v);
+                    resolve(result);
+
+                }, 2000);
+
+            }),
+            message: 'A course should have at least one tag.'
+        }
+
+    },
+    date: {
+        type: Date,
+        default: Date.now
+    },
+    isPublished: Boolean,
+    price: {
+        type: Number,
+        required: function () {
+            return this.isPublished;
+        },
+        min: 10,
+        max: 200
+    }
+
+});
+```
+
+### Validation Errors
+
+```javascript
+async function createCourse() {
+    //Object
+    const course = new Course({
+        name: 'Angular Course',
+        category: '-',
+        tags: ['pp','aa'],
+        author: 'Mosh',
+        isPublished: true,
+        price: 15
+    });
+
+    try {
+        const result = await course.save();
+        console.log(result);
+    } catch (ex) {
+        //console.log(ex.errors)
+        //console.log(ex.message);
+         for ( field in ex.errors){
+             console.log(ex.errors[field].message);
+         }
+    }
+}
+
+```
+
+### SchemaType Options
+
+### Strings
+
++ lowercase
++ uppercase
++ trim
+
+```javascript
+    category: {
+        type: String,
+        enum: ['web', 'mobile', 'network'],
+        required: true,
+        lowercase: true
+    },
+```
+
+### getters and setters
+
++ get
++ set
+
+```javascript
+name: {
+        type: String,
+        required: true,
+        minlength: 5,
+        maxlength: 255,
+        //match: /pattern/
+        set: (v) => `TITLE: ${v}`
+    },
+```
+
+```javascript
+price: {
+        type: Number,
+        required: function () {
+            return this.isPublished;
+        },
+        min: 10.00,
+        max: 200.00,
+        set: (v) => Math.round(v),
+    }
+```
+

@@ -8,14 +8,58 @@ mongoose.connect('mongodb://localhost/playground',{ useNewUrlParser: true, useUn
 
 //Schemas
 const coursesSchema = new mongoose.Schema({
-    name: String,
+    name: {
+        type: String,
+        required: true,
+        minlength: 5,
+        maxlength: 255,
+        //match: /pattern/
+        set: (v) => `TITLE: ${v}`
+    },
+    category: {
+        type: String,
+        enum: ['web', 'mobile', 'network'],
+        required: true,
+        lowercase: true
+    },
     author: String,
-    tags: [String],
+    tags: {
+        type: Array,
+        validate:{
+            validator:(v) => new Promise((resolve, reject)=>{
+                //Do some async work - Simulated
+                setTimeout(() => {
+
+                    if (v.length === 2){
+                        reject(new Error('Oops!'))
+                    }
+
+                    const result = v && v.length > 0;
+                    console.log(v);
+                    resolve(result);
+
+                }, 2000);
+
+            }),
+            message: 'A course should have at least one tag.'
+        }
+
+    },
     date: {
         type: Date,
         default: Date.now
     },
-    isPublished: Boolean
+    isPublished: Boolean,
+    price: {
+        type: Number,
+        required: function () {
+            return this.isPublished;
+        },
+        min: 10.00,
+        max: 200.00,
+        set: (v) => Math.round(v),
+    }
+
 });
 
 //Model - Class
@@ -24,14 +68,24 @@ const Course = mongoose.model('Course', coursesSchema);
 async function createCourse() {
     //Object
     const course = new Course({
-        name: 'Angular Course',
-        tags: ['angular', 'frontend'],
+        name: 'Angular 9 Course',
+        category: 'WEB',
+        tags: ['frontend'],
         author: 'Mosh',
-        isPublished: false
+        isPublished: true,
+        price: 15.87
     });
 
-    const result = await course.save();
-    console.log(result);
+    try {
+        const result = await course.save();
+        console.log(result);
+    } catch (ex) {
+        //console.log(ex.errors)
+        //console.log(ex.message);
+         for ( field in ex.errors){
+             console.log(ex.errors[field].message);
+         }
+    }
 }
 
 async function getCourses(){
@@ -116,14 +170,13 @@ async function deleteCourseDeleteOne(id){
 }
 
 
-
-//createCourse();
+createCourse();
 //getCourses();
 //updateCourseQueryFirst('5e6ecd6f103a5b15d868dba4');
 //updateCourseFindAndUpdate('5e6ecd6f103a5b15d868dba4');
 //updateCourseUpdateFirst('5e6ecd6f103a5b15d868dba4');
 //deleteCourseFindAndDelete('5e7156b4bbab8332b8e225bd');
-deleteCourseDeleteOne('5e7156b4bbab8332b8e225bd');
+//deleteCourseDeleteOne('5e7156b4bbab8332b8e225bd');
 
 
 
