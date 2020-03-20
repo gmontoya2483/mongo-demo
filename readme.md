@@ -404,3 +404,49 @@ async function createCourse() {
 }
 
 ```
+
+### SchemaType Options
+
+### Strings
+
++ lowercase
++ uppercase
++ trim
+
+```javascript
+    category: {
+        type: String,
+        enum: ['web', 'mobile', 'network'],
+        required: true,
+        lowercase: true
+    },
+```
+
+### getters and setters
+
++ get
++ set
+
+```javascript
+name: {
+        type: String,
+        required: true,
+        minlength: 5,
+        maxlength: 255,
+        //match: /pattern/
+        set: (v) => `TITLE: ${v}`
+    },
+```
+
+```javascript
+price: {
+        type: Number,
+        required: function () {
+            return this.isPublished;
+        },
+        min: 10.00,
+        max: 200.00,
+        set: (v) => Math.round(v),
+    }
+```
+

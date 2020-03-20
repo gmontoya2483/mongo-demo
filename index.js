@@ -12,13 +12,15 @@ const coursesSchema = new mongoose.Schema({
         type: String,
         required: true,
         minlength: 5,
-        maxlength: 255
+        maxlength: 255,
         //match: /pattern/
+        set: (v) => `TITLE: ${v}`
     },
     category: {
         type: String,
         enum: ['web', 'mobile', 'network'],
-        required: true
+        required: true,
+        lowercase: true
     },
     author: String,
     tags: {
@@ -53,8 +55,9 @@ const coursesSchema = new mongoose.Schema({
         required: function () {
             return this.isPublished;
         },
-        min: 10,
-        max: 200
+        min: 10.00,
+        max: 200.00,
+        set: (v) => Math.round(v),
     }
 
 });
@@ -65,12 +68,12 @@ const Course = mongoose.model('Course', coursesSchema);
 async function createCourse() {
     //Object
     const course = new Course({
-        name: 'Angular Course',
-        category: '-',
-        tags: ['pp','aa'],
+        name: 'Angular 9 Course',
+        category: 'WEB',
+        tags: ['frontend'],
         author: 'Mosh',
         isPublished: true,
-        price: 15
+        price: 15.87
     });
 
     try {
