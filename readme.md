@@ -376,3 +376,31 @@ const coursesSchema = new mongoose.Schema({
 
 });
 ```
+
+### Validation Errors
+
+```javascript
+async function createCourse() {
+    //Object
+    const course = new Course({
+        name: 'Angular Course',
+        category: '-',
+        tags: ['pp','aa'],
+        author: 'Mosh',
+        isPublished: true,
+        price: 15
+    });
+
+    try {
+        const result = await course.save();
+        console.log(result);
+    } catch (ex) {
+        //console.log(ex.errors)
+        //console.log(ex.message);
+         for ( field in ex.errors){
+             console.log(ex.errors[field].message);
+         }
+    }
+}
+
+```
